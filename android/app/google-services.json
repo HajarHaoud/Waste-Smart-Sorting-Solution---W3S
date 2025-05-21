@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "58975256341",
+    "project_id": "waste-smart-sorting-solu-53fc4",
+    "storage_bucket": "waste-smart-sorting-solu-53fc4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:58975256341:android:037eccf38e31bbb5f6f31c",
+        "android_client_info": {
+          "package_name": "com.example.w3s"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDarT6-zSEMRkIllBIuBWYh8B9rM4QSd_k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
