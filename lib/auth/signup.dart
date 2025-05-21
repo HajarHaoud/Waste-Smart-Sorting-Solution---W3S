@@ -74,13 +74,13 @@ class _SignupState extends State<Signup> {
               ),
               SizedBox(height: 20),
               Text(
-                "Welcome Back",
+                "Create an account",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,
-                  fontWeight: FontWeight.w600,
                   color: Colors.black,
                   fontFamily: 'CalSans',
+                  letterSpacing: 2.0
                 ),
               ),
               SizedBox(height: 30),
@@ -112,7 +112,7 @@ class _SignupState extends State<Signup> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Don't have an account? ",
+                    "Already have an account? ",
                     style: TextStyle(
                       color: Colors.grey[600],
                       fontSize: 14,
@@ -129,7 +129,7 @@ class _SignupState extends State<Signup> {
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                     ),
                     child: Text(
-                      "Sign up",
+                      "Log in",
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -182,6 +182,7 @@ class _SignupState extends State<Signup> {
                 borderSide: BorderSide(color: Colors.grey[300]!),
                 borderRadius: 8.0,
               ),
+
               SizedBox(height: 15),
 
               AuthButton(
@@ -195,28 +196,9 @@ class _SignupState extends State<Signup> {
                 borderSide: BorderSide(color: Colors.grey[300]!),
                 borderRadius: 8.0,
               ),
-              SizedBox(height: 25),
 
-              AuthButton(
-                text: 'Sign up',
-                onPressed: () {
 
-                },
-                backgroundColor: Colors.grey[200]!,
-                foregroundColor: Colors.black,
-                borderRadius: 8.0,
-              ),
-              SizedBox(height: 15),
 
-              AuthButton(
-                text: 'Sign in',
-                onPressed: () {
-
-                },
-                backgroundColor: Colors.grey[200]!,
-                foregroundColor: Colors.black,
-                borderRadius: 8.0, // Ajusté
-              ),
               SizedBox(height: 30),
 
               // Terms and Privacy Policy
