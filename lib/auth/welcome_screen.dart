@@ -1,6 +1,7 @@
 // welcome_screen.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:w3s/auth/login.dart';
 import 'package:w3s/auth/signup.dart';
 import 'package:w3s/services/auth_service.dart';
 
@@ -14,8 +15,8 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  final AuthService _authService = AuthService(); // Instance de votre service
-  bool _isLoading = false; // Pour gérer l'état de chargement
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
 
   void _handleGoogleSignInPressed() {
     _handleGoogleSignIn(); // on appelle la fonction async mais sans attendre le résultat ici
@@ -23,34 +24,40 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
 
   Future<void> _handleGoogleSignIn() async {
-    setState(() => _isLoading = true);
+    setState(
+      () => _isLoading = true
+    );
+
     try {
       User? user = await _authService.signInWithGoogle();
       if (user != null) {
-        // Connexion réussie !
-        // Naviguez vers l'écran d'accueil ou l'écran principal de l'application
         print("Connexion Google réussie: ${user.displayName}");
-        // Exemple de navigation:
-        // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => HomeScreen()));
-        if (mounted) { // Vérifiez si le widget est toujours monté avant d'utiliser context
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Bienvenue, ${user.displayName ?? 'Utilisateur'} !')),
-          );
-          // TODO: Naviguez vers votre page principale
-        }
-      } else {
-        // La connexion a échoué ou a été annulée
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('La connexion avec Google a échoué ou a été annulée.')),
+            SnackBar(
+              content: Text(
+                'Bienvenue,'
+                ' ${user.displayName ?? 'Utilisateur'} !'
+              )
+            ),
+          );
+          Navigator.of(context).pushReplacementNamed('/home');
+        }
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('La connexion avec Google a échoué ou a été annulée.')
+            ),
           );
         }
       }
     } catch (e) {
-      // Gérer les erreurs inattendues de l'UI si AuthService ne les gère pas toutes
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Erreur: ${e.toString()}')),
+          SnackBar(
+            content: Text('Erreur: ${e.toString()}')),
         );
       }
     } finally {
@@ -111,8 +118,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 const SizedBox(height: 16),
                 AuthButton(
                   text: "Sign up",
-                  onPressed: () {
-
+                  onPressed: (){
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => Signup(),
+                      )
+                    );
                   },
                   backgroundColor: Colors.grey[800]!,
                   foregroundColor: Colors.white,
@@ -121,7 +132,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 AuthButton(
                   text: "Log in",
                   onPressed: () {
-
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => Login(),
+                      ),
+                    );
                   },
                   backgroundColor: Colors.black, // Fond noir
                   foregroundColor: Colors.grey,    // Texte gris

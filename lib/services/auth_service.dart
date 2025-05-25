@@ -5,91 +5,201 @@ import 'package:flutter/foundation.dart' show kIsWeb; // Pour la gestion web
 class AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn(
-    // Optionnel: si vous avez besoin de scopes spécifiques ou d'un clientID web
-    // clientId: 'YOUR_WEB_CLIENT_ID.apps.googleusercontent.com', // Uniquement si vous ciblez le web et avez une config spécifique
-    // scopes: ['email', 'https://www.googleapis.com/auth/userinfo.profile'],
+    clientId: '58975256341-d5ukagipcf1pj4sq27oa0gqeiuvnojud.apps.googleusercontent.com', // Uniquement si vous ciblez le web et avez une config spécifique
+    scopes: [
+      'email',
+      'profile'
+    ],
   );
 
-  // Stream pour écouter les changements d'état d'authentification
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  // Obtenir l'utilisateur actuel
   User? get currentUser => _firebaseAuth.currentUser;
 
-  // Méthode pour se connecter avec Google
   Future<User?> signInWithGoogle() async {
     try {
-      // 1. Déclencher le flux d'authentification Google
-      GoogleSignInAccount? googleUser;
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
 
-      if (kIsWeb) {
-        // Pour le Web, GoogleSignIn().signIn() ouvre une popup.
-        // Assurez-vous que votre client ID OAuth 2.0 pour le web est configuré
-        // dans la console Google Cloud et Firebase.
-        googleUser = await _googleSignIn.signIn();
-      } else {
-        // Pour mobile, vérifiez si l'utilisateur est déjà connecté avec Google
-        // pour éviter de réafficher le sélecteur de compte si possible.
-        if (await _googleSignIn.isSignedIn()) {
-          // Tenter de se déconnecter silencieusement pour permettre un nouveau choix
-          // ou pour rafraîchir les tokens si nécessaire, peut être optionnel.
-          // await _googleSignIn.signOut(); // ou .disconnect() pour révoquer l'accès
-        }
-        googleUser = await _googleSignIn.signIn();
-      }
-
-      // Si l'utilisateur annule la connexion Google
       if (googleUser == null) {
         print('Google Sign-In annulé par l\'utilisateur.');
         return null;
       }
 
-      // 2. Obtenir les détails d'authentification de la requête
       final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-      // Si les tokens ne sont pas présents (ce qui serait inhabituel après une connexion réussie)
       if (googleAuth.accessToken == null && googleAuth.idToken == null) {
         print('Erreur: Tokens Google manquants.');
-        return null;
+        throw Exception('Erreur lors de la récupération des tokens Google');
       }
 
-      // 3. Créer une nouvelle crédential Firebase
       final AuthCredential credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
-      // 4. Se connecter à Firebase avec la crédential
       final UserCredential userCredential = await _firebaseAuth.signInWithCredential(credential);
 
       print('Connecté à Firebase avec Google: ${userCredential.user?.displayName}');
       return userCredential.user;
 
     } on FirebaseAuthException catch (e) {
-      // Gérer les erreurs spécifiques à Firebase Auth
-      print('FirebaseAuthException lors de la connexion Google: ${e.message} (Code: ${e.code})');
-      // Vous pouvez renvoyer des messages d'erreur spécifiques basés sur e.code
-      // e.g., 'account-exists-with-different-credential', 'invalid-credential', etc.
-      return null;
+      print('FirebaseAuthException lors de la connexion Google: ${e
+          .message} (Code: ${e.code})');
+      throw _handleFirebaseAuthException(e);
+    } on Exception catch(e) {
+      print('Erreur Google Sign-In : $e');
+      throw Exception('Erreur lors de la connexion avec Google : ${e.toString()}');
     } catch (e) {
-      // Gérer les autres erreurs (e.g., réseau, plugin Google Sign-In)
       print('Erreur inconnue lors de la connexion Google: $e');
       return null;
     }
   }
 
+  Future<User?> signInWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final UserCredential userCredential = await _firebaseAuth.signInWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+      return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      throw _handleFirebaseAuthException(e);
+    }
+  }
+
+  Future<User?> createUserWithEmailAndPassword({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final UserCredential userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email.trim(),
+        password: password,
+      );
+      return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      throw _handleFirebaseAuthException(e);
+    }
+  }
+
+  Future<void> verifyPhoneNumber({
+    required String phoneNumber,
+    required Function(PhoneAuthCredential) verificationCompleted,
+    required Function(FirebaseAuthException) verificationFailed,
+    required Function(String, int?) codeSent,
+    required Function(String) codeAutoRetrievalTimeout,
+    int? forceResendingToken,
+  }) async {
+    await _firebaseAuth.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
+      verificationCompleted: verificationCompleted,
+      verificationFailed: verificationFailed,
+      codeSent: codeSent,
+      codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
+      forceResendingToken: forceResendingToken,
+    );
+  }
+
+  Future<User?> signInWithPhoneCredential(PhoneAuthCredential credential) async {
+    try {
+      final UserCredential userCredential = await _firebaseAuth.signInWithCredential(credential);
+      return userCredential.user;
+    } on FirebaseAuthException catch (e) {
+      throw _handleFirebaseAuthException(e);
+    }
+  }
+
+
+
   // Méthode pour se déconnecter
   Future<void> signOut() async {
     try {
-      // Se déconnecter de Google d'abord pour s'assurer que le sélecteur de compte apparaît la prochaine fois
-      if (await _googleSignIn.isSignedIn()) {
-        await _googleSignIn.signOut();
-      }
-      // Puis se déconnecter de Firebase
-      await _firebaseAuth.signOut();
+      await Future.wait([
+        _firebaseAuth.signOut(),
+        _googleSignIn.signOut(),
+      ]);
       print('Utilisateur déconnecté.');
     } catch (e) {
       print('Erreur lors de la déconnexion: $e');
     }
   }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _firebaseAuth.sendPasswordResetEmail(email: email.trim());
+    } on FirebaseAuthException catch (e) {
+      throw _handleFirebaseAuthException(e);
+    }
+  }
+
+  Exception _handleFirebaseAuthException(FirebaseAuthException e) {
+    String message;
+    switch (e.code) {
+      case 'user-not-found':
+        message = 'Aucun utilisateur trouvé avec cet e-mail.';
+        break;
+      case 'wrong-password':
+        message = 'Mot de passe incorrect.';
+        break;
+      case 'email-already-in-use':
+        message = 'Cet e-mail est déjà utilisé.';
+        break;
+      case 'invalid-email':
+        message = 'L\'adresse e-mail n\'est pas valide.';
+        break;
+      case 'weak-password':
+        message = 'Le mot de passe est trop faible.';
+        break;
+      case 'user-disabled':
+        message = 'Ce compte utilisateur a été désactivé.';
+        break;
+      case 'too-many-requests':
+        message = 'Trop de tentatives. Réessayez plus tard.';
+        break;
+      case 'operation-not-allowed':
+        message = 'Cette méthode d\'authentification n\'est pas activée.';
+        break;
+      case 'invalid-credential':
+        message = 'Les informations d\'identification sont invalides.';
+        break;
+      case 'account-exists-with-different-credential':
+        message = 'Un compte existe déjà avec cette adresse e-mail mais avec un autre fournisseur.';
+        break;
+      case 'invalid-verification-code':
+        message = 'Le code de vérification est incorrect.';
+        break;
+      case 'invalid-verification-id':
+        message = 'ID de vérification invalide.';
+        break;
+      case 'quota-exceeded':
+        message = 'Quota SMS dépassé. Réessayez plus tard.';
+        break;
+      case 'invalid-phone-number':
+        message = 'Le numéro de téléphone n\'est pas valide.';
+        break;
+      default:
+        message = 'Une erreur d\'authentification s\'est produite: ${e.message}';
+    }
+    return Exception(message);
+  }
+
+  bool get isSignedIn => currentUser != null;
+
+  Map<String, dynamic>? get userInfo {
+    final user = currentUser;
+    if (user == null) return null;
+
+    return {
+      'uid': user.uid,
+      'email': user.email,
+      'displayName': user.displayName,
+      'photoURL': user.photoURL,
+      'phoneNumber': user.phoneNumber,
+      'emailVerified': user.emailVerified,
+    };
+  }
+
 }

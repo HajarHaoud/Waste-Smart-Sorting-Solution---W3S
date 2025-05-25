@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:w3s/auth/login.dart';
+import 'package:w3s/auth/phone_auth_page.dart';
 import 'package:w3s/auth/signup.dart';
 import 'package:w3s/auth/welcome_screen.dart';
 import 'package:w3s/screens/home_screen.dart';
@@ -30,7 +32,12 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: WelcomeScreen(),
+      routes: {
+        '/' : (context) => WelcomeScreen(),
+        '/home': (context) => HomeScreen(), // Votre page principale
+        '/login': (context) => Login(),
+        '/signup': (context) => Signup(),
+      },
     );
   }
 }
