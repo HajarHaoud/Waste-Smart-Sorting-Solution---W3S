@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:w3s/auth/login.dart';
 import 'package:w3s/auth/signup.dart';
 import 'package:w3s/auth/welcome_screen.dart';
 import 'package:w3s/screens/home_screen.dart';
@@ -30,7 +31,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: WelcomeScreen(),
+      home: HomeScreen(),
     );
   }
 }

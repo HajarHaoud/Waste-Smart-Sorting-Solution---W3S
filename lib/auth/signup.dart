@@ -53,8 +53,8 @@ class _SignupState extends State<Signup> {
       default:
         return 'Erreur lors de la création du compte.';
     }
-  }
 
+  }
 
 
   @override
