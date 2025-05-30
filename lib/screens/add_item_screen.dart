@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../models/marketplace_item.dart';
 import '../services/marketplace_service.dart';
+import '../screens/marketplace_screen.dart';
 
 class AddItemScreen extends StatefulWidget {
   @override
@@ -158,7 +159,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
       await MarketplaceService.addItem(item);
 
       _showSuccessSnackBar('Article publié avec succès!');
-      Navigator.pop(context, true); // Retourner avec un indicateur de succès
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MarketplaceScreen()),
+      ); // Retourner avec un indicateur de succès
 
     } catch (e) {
       _showErrorSnackBar('Erreur lors de la publication: $e');
