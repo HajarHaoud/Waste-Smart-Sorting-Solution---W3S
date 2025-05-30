@@ -4,6 +4,7 @@ import 'package:w3s/auth/login.dart';
 import 'package:w3s/auth/signup.dart';
 import 'package:w3s/auth/welcome_screen.dart';
 import 'package:w3s/screens/home_screen.dart';
+import 'package:w3s/screens/marketplace_screen.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +32,13 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      // routes: {
+      //   '/' : (context) => WelcomeScreen(),
+      //   '/home': (context) => HomeScreen(), // Votre page principale
+      //   '/login': (context) => Login(),
+      //   '/signup': (context) => Signup(),
+      //
+      // },
       home: HomeScreen(),
     );
   }

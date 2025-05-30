@@ -1,6 +1,9 @@
+// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; // Importe le package image_picker
-import 'dart:io'; // Pour utiliser File
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'add_item_screen.dart';
+import 'marketplace_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -9,14 +12,20 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  final ImagePicker _picker = ImagePicker(); // Crée une instance de ImagePicker
-  XFile? _imageFile; // Variable pour stocker l'image capturée
+  final ImagePicker _picker = ImagePicker();
+  XFile? _imageFile;
 
   void _onItemTapped(int index) {
-    // Si l'élément "Home" est tapé (index 0), on ne fait rien de spécial pour le moment.
-    // Tu peux ajouter une logique ici si tu veux revenir à l'état initial de l'écran d'accueil.
+    if (index == 2) { // Shopping cart - Marketplace
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MarketplaceScreen()),
+      );
+      return;
+    }
+
     if (index == 0) {
-      // print("Home pressed"); // Déjà géré par la navigation par défaut si on est déjà sur Home
+      // Already on home
     } else {
       setState(() {
         _selectedIndex = index;
@@ -33,21 +42,16 @@ class _HomeScreenState extends State<HomeScreen> {
           _imageFile = pickedFile;
         });
         print("Image capturée : ${pickedFile.path}");
-        // Ici, tu peux ajouter la logique pour afficher l'image,
-        // l'envoyer à un serveur, la traiter, etc.
-        // Par exemple, afficher un dialogue avec l'image:
         _showCapturedImageDialog(File(pickedFile.path));
       } else {
         print("Aucune image n'a été capturée.");
       }
     } catch (e) {
       print("Erreur lors de l'accès à la caméra : $e");
-      // Afficher un message d'erreur à l'utilisateur
       _showErrorDialog("Erreur d'accès à la caméra", "Veuillez vérifier les permissions de l'application.");
     }
   }
 
-  // Fonction pour afficher un dialogue avec l'image capturée
   void _showCapturedImageDialog(File image) {
     showDialog(
       context: context,
@@ -77,7 +81,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Fonction pour afficher un dialogue d'erreur
   void _showErrorDialog(String title, String message) {
     showDialog(
       context: context,
@@ -98,7 +101,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -107,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SafeArea(
             child: Column(
               children: [
-                // 🔍 Barre de recherche
+                // Barre de recherche
                 Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: TextField(
@@ -118,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                // 🗑 Image des catégories
+                // Image des catégories
                 Container(
                   height: 150,
                   child: ListView(
@@ -136,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 SizedBox(height: 10),
-                // 🔘 Titre "Category"
+                // Titre "Category"
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Align(
@@ -148,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 SizedBox(height: 8),
-                // 🧭 Liste horizontale des catégories
+                // Liste horizontale des catégories
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
@@ -188,14 +190,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // 💬 Bulle du Chatbot (à DROITE)
+          // Bulle du Chatbot (à DROITE)
           Positioned(
             bottom: 20,
             right: 20,
             child: GestureDetector(
               onTap: () {
-                // Adapte la route si besoin, assure-toi que '/chatbot' est défini dans ton MaterialApp
-                Navigator.pushNamed(context, '/chatbot');
+                // Navigation vers le chatbot
+                print("Chatbot ouvert");
               },
               child: Container(
                 width: 60,
@@ -217,23 +219,23 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
 
-          // 📷 Bulle de la caméra (à gauche)
+          // Bouton d'ajout d'article (remplace la caméra)
           Positioned(
             bottom: 20,
             left: 20,
             child: GestureDetector(
               onTap: () {
-                print("Caméra activée !");
-                _takePhoto(); // Appelle la fonction pour prendre une photo
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddItemScreen()),
+                );
               },
               child: Container(
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  image: DecorationImage(
-                    image: AssetImage('lib/images/camera.png'),
-                  ),
+                  color: Colors.green,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.6),
@@ -242,13 +244,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
+                child: Icon(
+                  Icons.add_photo_alternate,
+                  color: Colors.white,
+                  size: 30,
+                ),
               ),
             ),
           ),
         ],
       ),
 
-      // 🔻 Barre de navigation en bas
+      // Barre de navigation en bas
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
@@ -259,7 +266,6 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.notifications), label: ''),
           BottomNavigationBarItem(
-            // Assure-toi que 'assets/avatar.jpg' existe ou change le chemin
             icon: CircleAvatar(
               radius: 12,
               backgroundImage: AssetImage('assets/avatar.jpg'),

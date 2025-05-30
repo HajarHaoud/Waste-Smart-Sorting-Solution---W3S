@@ -23,7 +23,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
   int _countdown = 0;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     _phoneController.text = '+212';
 
@@ -31,10 +31,10 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
   }
 
   void _checkFirebaseConfig() async {
-    try{
+    try {
       final instance = FirebaseAuth.instance;
       print('Firebase Auth configuré : ${instance.app.name}');
-    }catch(e) {
+    } catch (e) {
       print('Erreur de configuration Firebase : $e');
       setState(() {
         _errorMessage = 'Erreur de configuration Firebase';
@@ -45,34 +45,34 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
   String _formatPhoneNumber(String phoneNumber) {
     phoneNumber = phoneNumber.replaceAll(RegExp(r'[\s\-\(\)]'), '');
 
-    if(phoneNumber.startsWith('+212')) {
-      if(phoneNumber.length > 4 && phoneNumber.substring(4, 5) == '0') {
-        phoneNumber = '+212' + phoneNumber.substring(5);
+    if (phoneNumber.startsWith('+212')) {
+      if (phoneNumber.length > 4 && phoneNumber.substring(4, 5) == '0') {
+        phoneNumber = '+212${phoneNumber.substring(5)}';
       }
     }
 
     return phoneNumber;
   }
 
-  void _startCountdown(){
+  void _startCountdown() {
     setState(() {
       _countdown = 60;
     });
 
     Future.doWhile(() async {
       await Future.delayed(Duration(seconds: 1));
-      if(mounted) {
+      if (mounted) {
         setState(() {
-          _countdown-- ;
+          _countdown--;
         });
         return _countdown > 0;
       }
-      return false ;
+      return false;
     });
   }
 
   Future<void> _sendVerificationCode() async {
-    if(!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
     setState(() {
       _isLoading = true;
@@ -81,8 +81,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
 
     String phoneNumber = _formatPhoneNumber(_phoneController.text.trim());
 
-
-    try{
+    try {
       await FirebaseAuth.instance.verifyPhoneNumber(
         phoneNumber: phoneNumber,
         timeout: Duration(seconds: 60),
@@ -94,11 +93,11 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
           print('Erreur de vérification : ${e.code} - ${e.message}');
           setState(() {
             _errorMessage = _handlePhoneAuthError(e.code);
-            _isLoading = false ;
+            _isLoading = false;
           });
         },
         codeSent: (String verificationId, int? resendTken) {
-          print('Code envoyé au ${phoneNumber}');
+          print('Code envoyé au $phoneNumber');
           setState(() {
             _verificationId = verificationId;
             _resendToken = resendTken ?? 0;
@@ -111,7 +110,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
             SnackBar(
               content: Text('Code de vérification envoyé ! '),
               backgroundColor: Colors.green,
-                duration: Duration(seconds:  3),
+              duration: Duration(seconds: 3),
             ),
           );
         },
@@ -123,21 +122,21 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
         },
         forceResendingToken: _resendToken > 0 ? _resendToken : null,
       );
-    } catch(e) {
+    } catch (e) {
       print('Erreur lors de l\'envoir du code : $e');
       setState(() {
         _errorMessage = 'Erreur lors de l\'envoie du code de vérification';
-        _isLoading = false ;
+        _isLoading = false;
       });
     }
   }
 
   Future<void> _verifyCode() async {
-    if(_codeController.text.trim().isEmpty) {
+    if (_codeController.text.trim().isEmpty) {
       setState(() {
         _errorMessage = 'Veuillez entrer le code de vérification';
       });
-      return ;
+      return;
     }
 
     setState(() {
@@ -152,7 +151,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
       );
 
       await _signInWithCredential(credential);
-    } on FirebaseAuthException catch(e) {
+    } on FirebaseAuthException catch (e) {
       print('Erreur de vérification du code : ${e.code} - ${e.message}');
       setState(() {
         _errorMessage = _handlePhoneAuthError(e.code);
@@ -169,8 +168,9 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
 
   Future<void> _signInWithCredential(PhoneAuthCredential credential) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-      
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithCredential(credential);
+
       print('Connexion réussie avec le téléphone : ');
       print(' - UID : ${userCredential.user?.uid}');
       print(' - Téléphone : ${userCredential.user?.phoneNumber}');
@@ -183,13 +183,15 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
         ),
       );
 
-      if(mounted) {
-        Navigator.of(context).restorablePushNamedAndRemoveUntil('/home', (route) => false);
+      if (mounted) {
+        Navigator.of(
+          context,
+        ).restorablePushNamedAndRemoveUntil('/home', (route) => false);
       }
-    }catch(e) {
+    } catch (e) {
       print('Erreur lors de la connexion : $e');
       setState(() {
-        _errorMessage = 'Erreur lors de la connexion' ;
+        _errorMessage = 'Erreur lors de la connexion';
         _isLoading = false;
       });
     }
@@ -232,12 +234,12 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(Icons.arrow_back , color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: Colors.black),
         ),
         title: Text(
           'Connexion par téléphone',
           style: TextStyle(
-            color:  Colors.black,
+            color: Colors.black,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -245,7 +247,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 24.0 , vertical: 20.0),
+          padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -268,10 +270,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                 _codeSent
                     ? 'Nous avons envoyé un code à 6 chiffres au ${_phoneController.text}'
                     : 'Nous vous enverrons un code de vérification par SMS',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 16, color: Colors.grey[600]),
               ),
 
               SizedBox(height: 30),
@@ -288,12 +287,19 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(Icons.error_outline, color: Colors.red[700], size: 20),
+                      Icon(
+                        Icons.error_outline,
+                        color: Colors.red[700],
+                        size: 20,
+                      ),
                       SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           _errorMessage!,
-                          style: TextStyle(color: Colors.red[700], fontSize: 14),
+                          style: TextStyle(
+                            color: Colors.red[700],
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ],
@@ -320,7 +326,9 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                         keyboardType: TextInputType.phone,
                         enabled: !_isLoading,
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[\d\s\+\-\(\)]')),
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[\d\s\+\-\(\)]'),
+                          ),
                         ],
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -369,8 +377,18 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
 
               // Bouton principal
               AuthButton(
-                text: _isLoading ? 'Chargement...' : _codeSent ? 'Vérifier le code' : 'Envoyer le code',
-                onPressed: _isLoading ? null : _codeSent ? _verifyCode : _sendVerificationCode,
+                text:
+                    _isLoading
+                        ? 'Chargement...'
+                        : _codeSent
+                        ? 'Vérifier le code'
+                        : 'Envoyer le code',
+                onPressed:
+                    _isLoading
+                        ? null
+                        : _codeSent
+                        ? _verifyCode
+                        : _sendVerificationCode,
                 backgroundColor: Colors.black,
                 foregroundColor: Colors.white,
                 fontWeight: FontWeight.w500,
@@ -382,15 +400,16 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
 
                 Center(
                   child: TextButton(
-                    onPressed: _countdown > 0 || _isLoading
-                        ? null
-                        : () {
-                      setState(() {
-                        _codeSent = false;
-                        _codeController.clear();
-                      });
-                      _sendVerificationCode();
-                    },
+                    onPressed:
+                        _countdown > 0 || _isLoading
+                            ? null
+                            : () {
+                              setState(() {
+                                _codeSent = false;
+                                _codeController.clear();
+                              });
+                              _sendVerificationCode();
+                            },
                     child: Text(
                       _countdown > 0
                           ? 'Renvoyer le code dans ${_countdown}s'
@@ -408,21 +427,19 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                 // Bouton modifier le numéro
                 Center(
                   child: TextButton(
-                    onPressed: _isLoading
-                        ? null
-                        : () {
-                      setState(() {
-                        _codeSent = false;
-                        _codeController.clear();
-                        _errorMessage = null;
-                      });
-                    },
+                    onPressed:
+                        _isLoading
+                            ? null
+                            : () {
+                              setState(() {
+                                _codeSent = false;
+                                _codeController.clear();
+                                _errorMessage = null;
+                              });
+                            },
                     child: Text(
                       'Modifier le numéro',
-                      style: TextStyle(
-                        color: Colors.grey[700],
-                        fontSize: 16,
-                      ),
+                      style: TextStyle(color: Colors.grey[700], fontSize: 16),
                     ),
                   ),
                 ),
@@ -445,10 +462,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                     Expanded(
                       child: Text(
                         'Nous utilisons votre numéro uniquement pour la vérification. Il ne sera pas partagé.',
-                        style: TextStyle(
-                          color: Colors.blue[700],
-                          fontSize: 14,
-                        ),
+                        style: TextStyle(color: Colors.blue[700], fontSize: 14),
                       ),
                     ),
                   ],
