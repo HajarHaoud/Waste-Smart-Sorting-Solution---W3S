@@ -248,6 +248,7 @@ class MarketplaceItemCard extends StatelessWidget {
 
   Widget _buildPlaceholder() {
     return Container(
+<<<<<<< HEAD
       color: Colors.grey[200],
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -270,3 +271,27 @@ class MarketplaceItemCard extends StatelessWidget {
     );
   }
 }
+=======
+        color: Colors.grey[200],
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                _getWasteTypeIcon(),
+                size: 40,
+                color: Colors.grey[400],
+              ),
+              SizedBox(height: 8),
+              Text(
+                item.wasteType,
+                style: TextStyle(
+                  color: Colors.grey[600],
+                  fontSize: 12,
+                ),
+              ),
+            ],
+       ),
+   );
+    }
+}
+>>>>>>> ff4497aca9c5b037cec83c3f65d272e640a769ba

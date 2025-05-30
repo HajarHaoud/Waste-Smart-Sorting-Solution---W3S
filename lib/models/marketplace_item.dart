@@ -125,5 +125,10 @@ class MarketplaceItem {
     imagePath.hashCode ^
     datePosted.hashCode ^
     userId.hashCode;
+<<<<<<< HEAD
   }
 }
+=======
+   }
+}
+>>>>>>> ff4497aca9c5b037cec83c3f65d272e640a769ba

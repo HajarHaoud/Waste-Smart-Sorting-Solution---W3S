@@ -202,7 +202,14 @@ class MarketplaceService {
 
       for (final item in demoItems) {
         await addItem(item);
+<<<<<<< HEAD
       }
     }
   }
 }
+=======
+}
+}
+   }
+}
+>>>>>>> ff4497aca9c5b037cec83c3f65d272e640a769ba

@@ -389,6 +389,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Padding(
+<<<<<<< HEAD
       padding: EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
@@ -414,3 +415,30 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
     );
   }
 }
+=======
+        padding: EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+            children: [
+              Icon(icon, size: 20, color: Colors.grey[600]),
+              SizedBox(width: 12),
+              Text(
+                '$label: ',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey[700],
+                ),
+              ),
+              Expanded(
+                child: Text(
+                  value,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                  ),
+                ),
+              ),
+            ],
+           ),
+   );
+  }
+}
+>>>>>>> ff4497aca9c5b037cec83c3f65d272e640a769ba

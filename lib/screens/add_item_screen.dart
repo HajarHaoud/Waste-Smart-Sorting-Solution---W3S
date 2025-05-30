@@ -4,6 +4,10 @@ import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../models/marketplace_item.dart';
 import '../services/marketplace_service.dart';
+<<<<<<< HEAD
+=======
+import '../screens/marketplace_screen.dart';
+>>>>>>> ff4497aca9c5b037cec83c3f65d272e640a769ba
 
 class AddItemScreen extends StatefulWidget {
   @override
@@ -158,7 +162,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
       await MarketplaceService.addItem(item);
 
       _showSuccessSnackBar('Article publié avec succès!');
+<<<<<<< HEAD
       Navigator.pop(context, true); // Retourner avec un indicateur de succès
+=======
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MarketplaceScreen()),
+      ); // Retourner avec un indicateur de succès
+>>>>>>> ff4497aca9c5b037cec83c3f65d272e640a769ba
 
     } catch (e) {
       _showErrorSnackBar('Erreur lors de la publication: $e');
@@ -181,6 +192,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+<<<<<<< HEAD
       appBar: AppBar(
         title: Text('Ajouter un article'),
         backgroundColor: Colors.green,
@@ -226,10 +238,154 @@ class _AddItemScreenState extends State<AddItemScreen> {
                         style: TextStyle(
                           color: Colors.grey,
                           fontSize: 16,
+=======
+        appBar: AppBar(
+          title: Text('Ajouter un article'),
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+        ),
+        body: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+            padding: EdgeInsets.all(16),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Section image
+                  GestureDetector(
+                    onTap: _showImageSourceDialog,
+                    child: Container(
+                      height: 200,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: _selectedImage != null
+                          ? ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(
+                          File(_selectedImage!.path),
+                          fit: BoxFit.cover,
+                        ),
+                      )
+                          : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.add_photo_alternate,
+                            size: 50,
+                            color: Colors.grey,
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Tap to add photo',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+
+                  // Type de déchet
+                  Text('Type de déchet', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8),
+                  DropdownButtonFormField<String>(
+                    value: _selectedWasteType,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    items: _wasteTypes.map((String type) {
+                      return DropdownMenuItem<String>(
+                        value: type,
+                        child: Text(type),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedWasteType = newValue!;
+                      });
+                    },
+                  ),
+                  SizedBox(height: 16),
+
+                  // Quantité
+                  Text('Quantité', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8),
+                  TextFormField(
+                    controller: _quantityController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Ex: 5 kg, 10 pièces...',
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Veuillez entrer la quantité';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 16),
+
+                  // Localisation
+                  Text('Localisation', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8),
+                  TextFormField(
+                    controller: _locationController,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Votre ville/quartier',
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Veuillez entrer la localisation';
+                      }
+                      return null;
+                    },
+                  ),
+                  SizedBox(height: 16),
+
+                  // Action (Donner ou Vendre)
+                  Text('Action', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: RadioListTile<String>(
+                          title: Text('Donner'),
+                          value: 'Donate',
+                          groupValue: _selectedAction,
+                          onChanged: (String? value) {
+                            setState(() {
+                              _selectedAction = value!;
+                            });
+                          },
+                        ),
+                      ),
+                      Expanded(
+                        child: RadioListTile<String>(
+                          title: Text('Vendre'),
+                          value: 'Sell',
+                          groupValue: _selectedAction,
+                          onChanged: (String? value) {
+                            setState(() {
+                              _selectedAction = value!;
+                            });
+                          },
+>>>>>>> ff4497aca9c5b037cec83c3f65d272e640a769ba
                         ),
                       ),
                     ],
                   ),
+<<<<<<< HEAD
                 ),
               ),
               SizedBox(height: 20),
@@ -322,10 +478,66 @@ class _AddItemScreenState extends State<AddItemScreen> {
                           _selectedAction = value!;
                         });
                       },
+=======
+
+                  // Prix (si vente)
+                  if (_selectedAction == 'Sell') ...[
+                    SizedBox(height: 16),
+                    Text('Prix (DH)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    SizedBox(height: 8),
+                    TextFormField(
+                      controller: _priceController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Prix en dirhams',
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                      ),
+                      validator: (value) {
+                        if (_selectedAction == 'Sell' && (value == null || value.isEmpty)) {
+                          return 'Veuillez entrer un prix';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+
+                  SizedBox(height: 16),
+
+                  // Description
+                  Text('Description (optionnel)', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 8),
+                  TextFormField(
+                    controller: _descriptionController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Ajoutez des détails sur votre article...',
+                      contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+
+                  // Bouton Publier
+                  ElevatedButton(
+                    onPressed: _submitItem,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: Text(
+                      'Publier',
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+>>>>>>> ff4497aca9c5b037cec83c3f65d272e640a769ba
                     ),
                   ),
                 ],
               ),
+<<<<<<< HEAD
 
               // Prix (si vente)
               if (_selectedAction == 'Sell') ...[
@@ -388,3 +600,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
     );
   }
 }
+=======
+            ),
+            ),
+    );
+   }
+}
+>>>>>>> ff4497aca9c5b037cec83c3f65d272e640a769ba
