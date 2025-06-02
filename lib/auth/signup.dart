@@ -49,6 +49,12 @@ class _SignupState extends State<Signup> {
       print('Email : ${userCredential.user?.email}');
       print('UID : ${userCredential.user?.uid}');
 
+      if (mounted) {
+        Navigator.of(
+          context,
+        ).restorablePushNamedAndRemoveUntil('/home', (route) => false);
+      }
+
       //Navigator.of(context).pop();
     } on FirebaseAuthException catch (e) {
       setState(() {

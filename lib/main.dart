@@ -32,14 +32,14 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      // routes: {
-      //   '/' : (context) => WelcomeScreen(),
-      //   '/home': (context) => HomeScreen(), // Votre page principale
-      //   '/login': (context) => Login(),
-      //   '/signup': (context) => Signup(),
-      //
-      // },
-      home: HomeScreen(),
+      routes: {
+        '/' : (context) => WelcomeScreen(),
+        '/home': (context) => HomeScreen(), // Votre page principale
+        '/login': (context) => Login(),
+        '/signup': (context) => Signup(),
+
+      },
+      //home: HomeScreen(),
     );
   }
 }
