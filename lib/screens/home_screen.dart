@@ -1,13 +1,14 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart'; // Potentiellement utilisé par AddItemScreen ou si la fonctionnalité caméra revient
-import 'dart:io'; // Potentiellement utilisé pour la même raison
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 // Imports des écrans de navigation
-import 'category_detail_screen.dart'; // Écran pour les détails d'une catégorie
-import 'add_item_screen.dart';       // Écran pour ajouter un nouvel article
-import 'marketplace_screen.dart';    // Écran pour la place de marché (Marketplace)
-// import 'chatbot_screen.dart';    // Décommentez si vous avez un écran dédié au chatbot
+import 'category_detail_screen.dart';
+import 'add_item_screen.dart';
+import 'marketplace_screen.dart';
+import 'quiz_screen.dart';
+import 'profile_screen.dart'; // Ajout de l'import pour ProfileScreen
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -15,45 +16,64 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0; // Index de l'onglet actuellement sélectionné dans la barre de navigation
-  final ImagePicker _picker = ImagePicker(); // Instance pour choisir des images (caméra/galerie)
-  XFile? _imageFile; // Pour stocker le fichier image sélectionné/capturé
+  int _selectedIndex = 0;
+  final ImagePicker _picker = ImagePicker();
+  XFile? _imageFile;
 
-  // Gère le clic sur un élément de la BottomNavigationBar
+  final TextEditingController _searchController = TextEditingController();
+  List<Map<String, String>> _filteredCategories = [];
+
+  final List<Map<String, String>> _allCategories = [
+    {'image': 'lib/images/plastique.png', 'label': 'Plastic'},
+    {'image': 'lib/images/verre.png', 'label': 'Glass'},
+    {'image': 'lib/images/metal.jpeg', 'label': 'Metal'},
+    {'image': 'lib/images/carton.jpg', 'label': 'Carton'},
+    {'image': 'lib/images/paper.png', 'label': 'Paper'},
+    {'image': 'lib/images/others.png', 'label': 'Others'},
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _filteredCategories = _allCategories;
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  void _onSearchChanged() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredCategories = _allCategories.where((item) {
+        return item['label']!.toLowerCase().contains(query);
+      }).toList();
+    });
+  }
+
   void _onItemTapped(int index) {
-    if (index == 2) { // Index 2 correspond à l'icône du panier (Marketplace)
+    // Navigation vers Marketplace
+    if (index == 1) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => MarketplaceScreen()),
       );
-      // Après avoir navigué, on ne change pas _selectedIndex pour que "Home" reste actif visuellement
-      // si l'utilisateur revient. Si vous voulez que "Marketplace" soit actif, décommentez le setState ci-dessous.
-      // setState(() {
-      //   _selectedIndex = index;
-      // });
-      return; // Sortir de la fonction pour éviter le setState général
-    }
-
-    // Si l'utilisateur clique sur l'onglet "Home" (index 0) alors qu'il est déjà dessus
-    if (index == _selectedIndex && index == 0) {
-      // Optionnel : actions spécifiques comme remonter en haut de la page ou rafraîchir.
-      // print("Déjà sur Home, action spécifique possible ici.");
       return;
     }
 
-    // Mettre à jour l'index sélectionné pour les autres onglets qui ne sont pas des navigations "push"
+    // Navigation vers Profile
+    if (index == 2) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ProfileScreen()),
+      );
+      return;
+    }
+
+    // Pour l'onglet Home, on reste sur la même page
+    if (index == _selectedIndex && index == 0) return;
     setState(() {
       _selectedIndex = index;
     });
-
-    // Logique de navigation pour d'autres onglets si nécessaire :
-    // if (index == 1) { Navigator.pushNamed(context, '/map_screen'); }
-    // if (index == 3) { Navigator.pushNamed(context, '/notifications_screen'); }
-    // if (index == 4) { Navigator.pushNamed(context, '/profile_screen'); }
   }
 
-  // Fonction pour ouvrir la caméra et prendre une photo
-  // Note: Cette fonction pourrait être déplacée vers AddItemScreen si c'est son seul usage.
   Future<void> _takePhoto() async {
     try {
       final XFile? pickedFile = await _picker.pickImage(source: ImageSource.camera);
@@ -62,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
           _imageFile = pickedFile;
         });
         print("Image capturée : ${pickedFile.path}");
-        _showCapturedImageDialog(File(pickedFile.path)); // Affiche l'image capturée
+        _showCapturedImageDialog(File(pickedFile.path));
       } else {
         print("Aucune image n'a été capturée.");
       }
@@ -72,7 +92,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  // Affiche un dialogue avec l'image capturée
   void _showCapturedImageDialog(File image) {
     showDialog(
       context: context,
@@ -93,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
             TextButton(
               child: Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop(); // Ferme le dialogue
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -102,7 +121,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Affiche un dialogue d'erreur générique
   void _showErrorDialog(String title, String message) {
     showDialog(
       context: context,
@@ -114,7 +132,7 @@ class _HomeScreenState extends State<HomeScreen> {
             TextButton(
               child: Text("OK"),
               onPressed: () {
-                Navigator.of(context).pop(); // Ferme le dialogue
+                Navigator.of(context).pop();
               },
             ),
           ],
@@ -123,11 +141,9 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Construit un item de catégorie cliquable
   Widget _buildCategoryItem(BuildContext context, String imagePath, String label) {
     return GestureDetector(
       onTap: () {
-        // Navigue vers l'écran de détail de la catégorie
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -138,19 +154,18 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: Container(
-          width: 85, // Largeur de l'item de catégorie
+          width: 85,
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Column(
-            mainAxisSize: MainAxisSize.min, // Prend la hauteur minimale nécessaire
+            mainAxisSize: MainAxisSize.min,
             children: [
-              ClipOval( // Rend l'image circulaire
+              ClipOval(
                 child: Image.asset(
                   imagePath,
                   width: 50,
                   height: 50,
-                  fit: BoxFit.cover, // Assure que l'image remplit le cercle
+                  fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
-                    // Affiche une icône si l'image ne peut pas être chargée
                     return Container(
                       width: 50,
                       height: 50,
@@ -160,13 +175,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
               ),
-              SizedBox(height: 8), // Espace entre l'image et le texte
+              SizedBox(height: 8),
               Text(
                 label,
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 12),
-                overflow: TextOverflow.ellipsis, // Ajoute "..." si le texte est trop long
-                maxLines: 1, // Limite le texte à une seule ligne
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
               ),
             ],
           ),
@@ -177,55 +192,44 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Liste des données pour les catégories
-    final List<Map<String, String>> categories = [
-      {'image': 'lib/images/plastique.png', 'label': 'Plastic'},
-      {'image': 'lib/images/verre.png', 'label': 'Glass'},
-      {'image': 'lib/images/metal.jpeg', 'label': 'Metal'},
-      {'image': 'lib/images/carton.jpg', 'label': 'Carton'},
-      {'image': 'lib/images/paper.png', 'label': 'Paper'},
-      {'image': 'lib/images/others.png', 'label': 'Others'},
-    ];
-
     return Scaffold(
-      body: Stack( // Permet de superposer les boutons flottants sur le contenu principal
+      body: Stack(
         children: [
-          SafeArea( // Assure que le contenu ne déborde pas dans les zones système (barre d'état, etc.)
-            child: SingleChildScrollView( // Permet au contenu de défiler si l'écran est trop petit
+          SafeArea(
+            child: SingleChildScrollView(
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch, // Étire les enfants sur toute la largeur
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Barre de recherche stylisée
                   Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: TextField(
+                      controller: _searchController,
                       decoration: InputDecoration(
                         hintText: 'Search',
                         prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
                         filled: true,
-                        fillColor: Colors.grey[200], // Fond de la barre de recherche
+                        fillColor: Colors.grey[200],
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(30.0), // Coins arrondis
-                          borderSide: BorderSide.none, // Pas de bordure visible
+                          borderRadius: BorderRadius.circular(30.0),
+                          borderSide: BorderSide.none,
                         ),
                         contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
                       ),
                     ),
                   ),
-                  // Bannière d'image pour les catégories
                   Container(
                     height: 150,
                     margin: const EdgeInsets.symmetric(horizontal: 16.0),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15.0), // Coins arrondis pour la bannière
+                      borderRadius: BorderRadius.circular(15.0),
                       image: DecorationImage(
-                        image: AssetImage('lib/images/poubelles.png'), // Chemin de votre image de bannière
+                        image: AssetImage('lib/images/poubelles.png'),
                         fit: BoxFit.cover,
                         onError: (exception, stackTrace) {
                           print('Erreur de chargement de l\'image de bannière: $exception');
                         },
                       ),
-                      boxShadow: [ // Ombre subtile pour la bannière
+                      boxShadow: [
                         BoxShadow(
                           color: Colors.grey.withOpacity(0.3),
                           spreadRadius: 1,
@@ -236,7 +240,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   SizedBox(height: 20),
-                  // Titre de la section "Category"
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Text(
@@ -245,46 +248,40 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   SizedBox(height: 10),
-                  // Liste horizontale des catégories
                   Container(
-                    height: 120, // Hauteur fixe pour la liste des catégories
+                    height: 120,
                     child: ListView.builder(
-                      scrollDirection: Axis.horizontal, // Défilement horizontal
-                      padding: EdgeInsets.symmetric(horizontal: 8.0), // Espacement sur les côtés
-                      itemCount: categories.length,
+                      scrollDirection: Axis.horizontal,
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      itemCount: _filteredCategories.length,
                       itemBuilder: (context, index) {
-                        final item = categories[index];
+                        final item = _filteredCategories[index];
                         return _buildCategoryItem(context, item['image']!, item['label']!);
                       },
                     ),
                   ),
-                  SizedBox(height: 80), // Espace en bas pour éviter que les boutons flottants cachent du contenu
+                  SizedBox(height: 80),
                 ],
               ),
             ),
           ),
 
-          // Bouton flottant pour le Chatbot (en bas à droite)
           Positioned(
-            bottom: 20,
-            right: 20,
+            bottom: 15,
+            right: 15,
             child: GestureDetector(
               onTap: () {
-                // Navigation vers l'écran du Chatbot
-                // Si vous avez une route nommée '/chatbot' :
-                if (ModalRoute.of(context)?.settings.name != '/chatbot') {
-                  Navigator.pushNamed(context, '/chatbot');
-                }
-                // Sinon, utilisez MaterialPageRoute :
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => ChatbotScreen()));
-                print("Chatbot ouvert (placeholder)"); // Message si la navigation n'est pas implémentée
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => QuizScreen()),
+                );
               },
               child: Container(
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  shape: BoxShape.circle, // Forme circulaire
-                  color: Theme.of(context).colorScheme.secondary, // Couleur du thème
+                  shape: BoxShape.circle,
+                  color: Theme.of(context).colorScheme.primary,
                   boxShadow: [
                     BoxShadow(
                       color: Colors.grey.withOpacity(0.5),
@@ -294,50 +291,39 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ],
                 ),
-                child: Icon(Icons.chat_bubble_outline, color: Colors.white, size: 30), // Icône du chatbot
+                child: Icon(Icons.quiz, color: Colors.white, size: 30),
               ),
             ),
           ),
 
-          // Bouton flottant pour ajouter un article (en bas à gauche)
           Positioned(
-            bottom: 10,
-            left: 20,
+            bottom: 15,
+            left: 15,
             child: FloatingActionButton(
               onPressed: () {
-                // Navigue vers l'écran pour ajouter un nouvel article
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => AddItemScreen()),
                 );
               },
-              child: Icon(Icons.add_photo_alternate_outlined, color: Colors.white), // Icône
-              backgroundColor: Theme.of(context).colorScheme.primary, // Couleur du thème
-              heroTag: 'addItemButton', // Tag unique si plusieurs FAB sur la même route complexe
+              child: Icon(Icons.add_photo_alternate_outlined, color: Colors.white),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              heroTag: 'addItemButton',
             ),
           ),
         ],
       ),
-
-      // Barre de navigation en bas de l'écran
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex, // Onglet actuellement sélectionné
-        onTap: _onItemTapped, // Fonction appelée lors du clic sur un onglet
-        type: BottomNavigationBarType.fixed, // Assure que tous les items sont visibles et ont un label
-        selectedItemColor: Theme.of(context).colorScheme.primary, // Couleur de l'icône et du texte de l'onglet sélectionné
-        unselectedItemColor: Colors.grey[600], // Couleur pour les onglets non sélectionnés
-        // showSelectedLabels: false, // Décommentez pour masquer les labels
-        // showUnselectedLabels: false,
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
+        unselectedItemColor: Colors.grey[600],
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined), // Icône par défaut
-            activeIcon: Icon(Icons.home),     // Icône quand l'onglet est actif
+            icon: Icon(Icons.home_outlined),
+            activeIcon: Icon(Icons.home),
             label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.location_on_outlined),
-            activeIcon: Icon(Icons.location_on),
-            label: 'Location',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart_outlined),
@@ -345,17 +331,8 @@ class _HomeScreenState extends State<HomeScreen> {
             label: 'Market',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.notifications_none_outlined),
-            activeIcon: Icon(Icons.notifications),
-            label: 'Alerts',
-          ),
-          BottomNavigationBarItem(
-            icon: CircleAvatar( // Icône de profil utilisant un CircleAvatar
-              radius: 14,
-              backgroundImage: AssetImage('assets/avatar.jpg'), // Chemin vers l'image d'avatar
-              // backgroundColor: Colors.grey[300], // Couleur de fond si l'image ne charge pas
-              // child: Icon(Icons.person_outline, size: 18, color: Colors.white), // Icône placeholder
-            ),
+            icon: Icon(Icons.person_outlined),
+            activeIcon: Icon(Icons.person),
             label: 'Profile',
           ),
         ],

@@ -125,5 +125,5 @@ class MarketplaceItem {
     imagePath.hashCode ^
     datePosted.hashCode ^
     userId.hashCode;
-   }
+    }
 }
