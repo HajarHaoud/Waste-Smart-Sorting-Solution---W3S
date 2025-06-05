@@ -6,10 +6,10 @@ import 'package:w3s/auth/signup.dart';
 import 'package:w3s/widgets/auth_button.dart';
 
 class Login extends StatefulWidget {
-  const Login({super.key}); // Changé pour utiliser const
+  const Login({super.key});
 
   @override
-  State<Login> createState() => _LoginState(); // Changé pour utiliser createState
+  State<Login> createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
@@ -173,7 +173,7 @@ class _LoginState extends State<Login> {
               padding: const EdgeInsets.symmetric(
                 horizontal: 24.0,
                 vertical: 20.0,
-              ), // Ajouté un padding vertical
+              ),
               child: Column(
                 children: [
                   SizedBox(height: 100, child: Image.asset("lib/images/logo.png")),
@@ -375,7 +375,6 @@ class _LoginState extends State<Login> {
 
                   SizedBox(height: 30),
 
-                  // Terms and Privacy Policy
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -407,5 +406,5 @@ class _LoginState extends State<Login> {
             ),
        ),
      );
- }
+  }
 }

@@ -1,10 +1,8 @@
-// welcome_screen.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:w3s/auth/login.dart';
 import 'package:w3s/auth/signup.dart';
 import 'package:w3s/services/auth_service.dart';
-
 import '../widgets/auth_button.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -19,7 +17,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   bool _isLoading = false;
 
   void _handleGoogleSignInPressed() {
-    _handleGoogleSignIn(); // on appelle la fonction async mais sans attendre le résultat ici
+    _handleGoogleSignIn();
   }
 
 
@@ -76,9 +74,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             children: [
               Expanded(
                 child: Center(
-                  child: Image.asset(
-                      "lib/images/w3slogo.png"
-                  ),
+                  child: Image.asset("lib/images/w3slogo.png"),
                 ),
               ),
               Container(
@@ -101,16 +97,14 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       },
                       backgroundColor: Colors.white,
                       foregroundColor: Colors.black,
-                      iconPath: "lib/images/apple.png", // Assurez-vous que cette image existe
+                      iconPath: "lib/images/apple.png",
                     ),
                     SizedBox(height: 16),
                     AuthButton(
                       text: "Continue with Google",
-                      onPressed: !_isLoading
-                          ? () {
+                      onPressed: !_isLoading ? () {
                         _handleGoogleSignIn();
-                      }
-                          : null,
+                      } : null,
                       backgroundColor: Colors.grey[800]!,
                       foregroundColor: Colors.white,
                       iconPath: "lib/images/google.png",
@@ -138,12 +132,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           ),
                         );
                       },
-                      backgroundColor: Colors.black, // Fond noir
-                      foregroundColor: Colors.grey,    // Texte gris
-                      borderSide: const BorderSide(color: Colors.grey), // Bordure grise
+                      backgroundColor: Colors.black,
+                      foregroundColor: Colors.grey,
+                      borderSide: const BorderSide(color: Colors.grey),
                     ),
                     Container(
-                      margin: const EdgeInsets.only(top: 20, bottom: 10), // Ajout d'un peu de marge en bas
+                      margin: const EdgeInsets.only(top: 20, bottom: 10),
                       width: 40,
                       height: 5,
                       decoration: BoxDecoration(

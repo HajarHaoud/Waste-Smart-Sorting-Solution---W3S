@@ -1,14 +1,13 @@
-// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:w3s/screens/ad_details_form_screen.dart';
+import 'package:w3s/screens/take_photo_screen.dart';
 import 'dart:io';
-
-// Imports des écrans de navigation
 import 'category_detail_screen.dart';
 import 'add_item_screen.dart';
 import 'marketplace_screen.dart';
 import 'quiz_screen.dart';
-import 'profile_screen.dart'; // Ajout de l'import pour ProfileScreen
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -49,7 +48,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onItemTapped(int index) {
-    // Navigation vers Marketplace
     if (index == 1) {
       Navigator.push(
         context,
@@ -58,7 +56,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    // Navigation vers Profile
     if (index == 2) {
       Navigator.push(
         context,
@@ -67,7 +64,6 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
-    // Pour l'onglet Home, on reste sur la même page
     if (index == _selectedIndex && index == 0) return;
     setState(() {
       _selectedIndex = index;
@@ -269,32 +265,21 @@ class _HomeScreenState extends State<HomeScreen> {
           Positioned(
             bottom: 15,
             right: 15,
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => QuizScreen()),
-                );
+            child: FloatingActionButton(
+              onPressed: () {
+
+                Navigator.pushNamed(context, '/chat');
               },
-              child: Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Theme.of(context).colorScheme.primary,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
-                      spreadRadius: 1,
-                      blurRadius: 5,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Icon(Icons.quiz, color: Colors.white, size: 30),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              heroTag: 'chatButton',
+              child: const Icon(
+                Icons.chat_bubble_outline_rounded,
+                color: Colors.white
               ),
+              tooltip: 'Chat with Assistant',
             ),
           ),
+
 
           Positioned(
             bottom: 15,
@@ -303,7 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AddItemScreen()),
+                  MaterialPageRoute(builder: (context) => AdDetailsFormScreen()),
                 );
               },
               child: Icon(Icons.add_photo_alternate_outlined, color: Colors.white),

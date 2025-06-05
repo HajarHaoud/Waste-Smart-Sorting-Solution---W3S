@@ -6,7 +6,7 @@ class CustomTextField extends StatelessWidget {
   final TextEditingController? controller;
   final TextInputType? keyboardType;
 
-  CustomTextField({
+  const CustomTextField({
     super.key,
     required this.hintText,
     this.obscureText = false,
@@ -24,9 +24,9 @@ class CustomTextField extends StatelessWidget {
         hintText: hintText,
         hintStyle: TextStyle(color: Colors.grey[500]),
         filled: true,
-        fillColor: Colors.grey[200], // Comme dans votre écran Signup
+        fillColor: Colors.grey[200],
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8.0), // Ou 10.0 pour correspondre aux boutons
+          borderRadius: BorderRadius.circular(8.0),
           borderSide: BorderSide.none,
         ),
         contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),

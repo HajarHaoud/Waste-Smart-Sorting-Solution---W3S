@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:w3s/models/quiz_state.dart';
 import '../providers/quiz_provider.dart';
 
 class QuizScreen extends ConsumerWidget {
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final quizState = ref.watch(quizProvider);

@@ -13,7 +13,7 @@ class AuthButton extends StatelessWidget {
   final FontWeight fontWeight;
   final double fontSize;
 
-  AuthButton({
+  const AuthButton({
     super.key,
     required this.text,
     required this.onPressed,
@@ -46,19 +46,7 @@ class AuthButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (iconPath != null) ...[
-            Image.asset(
-              iconPath!,
-              height: 24,
-              width: 24,
-              // Si vos icônes Apple/Google sont sombres sur fond clair,
-              // et claires sur fond sombre, vous pourriez avoir besoin de logique ici
-              // ou de fournir différentes versions des icônes.
-              // Pour l'icône Apple sur fond blanc, elle est généralement noire.
-              // Pour l'icône Google, elle est colorée.
-              // color: (backgroundColor == Colors.white && iconPath!.contains("apple"))
-              //     ? Colors.black
-              //     : null, // Exemple simple
-            ),
+            Image.asset(iconPath!, height: 24, width: 24),
             const SizedBox(width: 12),
           ],
           Text(

@@ -1,6 +1,4 @@
-// lib/screens/marketplace_screen.dart
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import '../models/marketplace_item.dart';
 import '../services/marketplace_service.dart';

@@ -6,10 +6,10 @@ import 'package:w3s/screens/home_screen.dart';
 import 'package:w3s/widgets/auth_button.dart';
 
 class Signup extends StatefulWidget {
-  const Signup({super.key}); // Changé pour utiliser const
+  const Signup({super.key});
 
   @override
-  State<Signup> createState() => _SignupState(); // Changé pour utiliser createState
+  State<Signup> createState() => _SignupState();
 }
 
 class _SignupState extends State<Signup> {
@@ -109,7 +109,7 @@ class _SignupState extends State<Signup> {
             .createUserWithEmailAndPassword(
           email:
           _emailController.text
-              .trim(), // trim() enlève les espaces avant/après
+              .trim(),
           password: _passwordController.text,
         );
 
@@ -157,7 +157,6 @@ class _SignupState extends State<Signup> {
         return 'L\'adresse e-mail n\'est pas valide.';
       case 'weak-password':
         return 'Le mot de passe est trop faible.';
-    // AJOUT : Gestion des erreurs spécifiques à Google Sign-In
       case 'account-exists-with-different-credential':
         return 'Un compte existe déjà avec cette adresse e-mail mais avec un autre fournisseur.';
       case 'invalid-credential':
@@ -180,7 +179,7 @@ class _SignupState extends State<Signup> {
               padding: const EdgeInsets.symmetric(
                 horizontal: 24.0,
                 vertical: 20.0,
-              ), // Ajouté un padding vertical
+              ),
               child: Column(
                 children: [
                   SizedBox(height: 100, child: Image.asset("lib/images/logo.png")),
@@ -209,9 +208,7 @@ class _SignupState extends State<Signup> {
                             if (value == null || value.isEmpty) {
                               return 'Veuillez entrer votre email';
                             }
-                            if (!RegExp(
-                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
-                            ).hasMatch(value)) {
+                            if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
                               return 'Veuillez entrer un email valide';
                             }
                             return null;

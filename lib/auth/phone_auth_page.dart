@@ -26,7 +26,6 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
   void initState() {
     super.initState();
     _phoneController.text = '+212';
-
     _checkFirebaseConfig();
   }
 
@@ -335,7 +334,7 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
                                 return 'Veuillez entrer votre numéro de téléphone';
                               }
                               if (!value.startsWith('+')) {
-                                return 'Le numéro doit commencer par un indicatif pays (+33 pour la France)';
+                                return 'Le numéro doit commencer par un indicatif pays (+212 pour la Maroc)';
                               }
                               if (value.length < 10) {
                                 return 'Numéro de téléphone trop court';
@@ -377,17 +376,12 @@ class _PhoneAuthPageState extends State<PhoneAuthPage> {
 
                   // Bouton principal
                   AuthButton(
-                    text:
-                    _isLoading
-                        ? 'Chargement...'
+                    text: _isLoading ? 'Chargement...'
                         : _codeSent
                         ? 'Vérifier le code'
                         : 'Envoyer le code',
-                    onPressed:
-                    _isLoading
-                        ? null
-                        : _codeSent
-                        ? _verifyCode
+                    onPressed: _isLoading ? null
+                        : _codeSent ? _verifyCode
                         : _sendVerificationCode,
                     backgroundColor: Colors.black,
                     foregroundColor: Colors.white,
