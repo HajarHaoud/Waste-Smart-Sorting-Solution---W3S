@@ -288,7 +288,7 @@ class _HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AdDetailsFormScreen()),
+                  MaterialPageRoute(builder: (context) => TakePhotoScreen()),
                 );
               },
               child: Icon(Icons.add_photo_alternate_outlined, color: Colors.white),
