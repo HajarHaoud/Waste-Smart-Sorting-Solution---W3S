@@ -6,6 +6,7 @@ class AdModel {
   final String quantity;
   final String? description;
   final String adType; // 'give' ou 'sell'
+  final double? price; // Nouveau champ: prix de l'annonce (peut être null si 'give')
   final DateTime? createdAt;
   final String? imageUrl; // URL de l'image une fois stockée sur le serveur
 
@@ -16,6 +17,7 @@ class AdModel {
     required this.quantity,
     this.description,
     required this.adType,
+    this.price, // Ajouter le prix ici
     this.createdAt,
     this.imageUrl,
   });
@@ -28,6 +30,7 @@ class AdModel {
       'quantity': quantity,
       'description': description,
       'ad_type': adType,
+      'price': price, // Inclure le prix
     };
   }
 
@@ -40,6 +43,7 @@ class AdModel {
       quantity: json['quantity'] as String,
       description: json['description'] as String?,
       adType: json['ad_type'] as String,
+      price: (json['price'] as num?)?.toDouble(), // Lire le prix du JSON
       imageUrl: json['image_url'] as String?,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)

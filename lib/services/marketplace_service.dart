@@ -3,7 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path_util; // Pour manipuler les chemins et extensions
-import '../models/marketplace_item.dart'; // Assurez-vous que ce modèle a fromMap, toMap et copyWith
+import 'package:w3s/constants.dart';
+import '../models/marketplace_item.dart';
+import 'package:http/http.dart' as http;// Assurez-vous que ce modèle a fromMap, toMap et copyWith
 
 class MarketplaceService {
   static const String _jsonFileName = 'marketplace_items.json'; // Nom du fichier JSON
@@ -128,10 +130,39 @@ class MarketplaceService {
 
   // Obtenir tous les articles
   static Future<List<MarketplaceItem>> getAllItems() async {
-    await _loadItemsToCache();
-    _itemsCache.sort((a, b) => b.datePosted.compareTo(a.datePosted));
-    return List.from(_itemsCache);
+    // Utilise la constante GET_ADS_ENDPOINT de votre fichier constants.dart
+    final url = Uri.parse(API_BASE_URL1 + GET_ADS_ENDPOINT);
+
+    try {
+      print("MarketplaceService: Appel de l'API à l'adresse $url");
+
+      final response = await http.get(url).timeout(const Duration(seconds: 15));
+
+      print("MarketplaceService: Réponse reçue - Statut ${response.statusCode}");
+
+      if (response.statusCode == 200) {
+        // Décoder la réponse JSON, qui est une liste d'objets
+        final List<dynamic> jsonList = jsonDecode(response.body);
+
+        // Mapper chaque objet JSON en un objet MarketplaceItem
+        final List<MarketplaceItem> items = jsonList
+            .map((jsonItem) => MarketplaceItem.fromJson(jsonItem))
+            .toList();
+
+        print("MarketplaceService: ${items.length} articles parsés avec succès.");
+        return items;
+
+      } else {
+        // Si le serveur retourne une erreur
+        throw Exception('Échec du chargement des articles (Statut: ${response.statusCode})');
+      }
+    } catch (e) {
+      // Gérer les erreurs de connexion, timeout, etc.
+      print("MarketplaceService: Erreur lors de l'appel API - $e");
+      throw Exception('Erreur de connexion: $e');
+    }
   }
+
 
   // Mettre à jour un article (gère aussi le changement d'image)
   static Future<void> updateItem(MarketplaceItem updatedItem, {File? newTempImageFile}) async {
@@ -299,5 +330,5 @@ class MarketplaceService {
       stats[type.toLowerCase()] = _itemsCache.where((item) => item.wasteType == type).length;
     }
     return stats;
-   }
+  }
 }

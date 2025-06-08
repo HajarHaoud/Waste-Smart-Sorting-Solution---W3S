@@ -59,6 +59,10 @@ class ApiService {
         request.fields['description'] = adData.description!;
       }
       request.fields['ad_type'] = adData.adType;
+      // Ajouter le prix si présent
+      if (adData.price != null) {
+        request.fields['price'] = adData.price!.toString();
+      }
       // request.fields['user_id'] = adData.userId; // Le backend devrait l'obtenir du token
 
       // Ajouter le token d'authentification si nécessaire

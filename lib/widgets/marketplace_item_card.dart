@@ -1,6 +1,6 @@
 // lib/widgets/marketplace_item_card.dart
 import 'package:flutter/material.dart';
-import 'dart:io';
+import 'dart:convert'; // <<< 1. AJOUT DE CET IMPORT
 import '../models/marketplace_item.dart';
 
 class MarketplaceItemCard extends StatelessWidget {
@@ -29,20 +29,22 @@ class MarketplaceItemCard extends StatelessWidget {
   }
 
   Color _getActionColor() {
-    return item.action == 'Donate' ? Colors.green : Colors.blue;
+    // Correction pour correspondre à la traduction dans le modèle
+    return item.action == 'Donner' ? Colors.green : Colors.lightGreen;
   }
 
   IconData _getWasteTypeIcon() {
-    switch (item.wasteType) {
-      case 'Plastic':
+    // Utiliser toLowerCase pour être insensible à la casse (cardboard vs Cardboard)
+    switch (item.wasteType.toLowerCase()) {
+      case 'plastic':
         return Icons.local_drink;
-      case 'Glass':
+      case 'glass':
         return Icons.wine_bar;
-      case 'Metal':
+      case 'metal':
         return Icons.hardware;
-      case 'Carton':
+      case 'cardboard': // Correction du nom 'Carton' en 'cardboard'
         return Icons.inventory_2;
-      case 'Paper':
+      case 'paper':
         return Icons.description;
       default:
         return Icons.category;
@@ -75,11 +77,12 @@ class MarketplaceItemCard extends StatelessWidget {
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                      // Appel à la nouvelle méthode _buildImage
                       child: _buildImage(),
                     ),
                   ),
 
-                  // Badge d'action (Donate/Sell)
+                  // Badge d'action (Donner/Vendre)
                   Positioned(
                     top: 8,
                     left: 8,
@@ -90,7 +93,8 @@ class MarketplaceItemCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        item.action == 'Donate' ? 'DONNER' : 'VENDRE',
+                        // Correction pour correspondre à la traduction
+                        item.action.toUpperCase(),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 10,
@@ -152,6 +156,7 @@ class MarketplaceItemCard extends StatelessWidget {
                 padding: EdgeInsets.all(8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround, // Mieux répartir l'espace
                   children: [
                     // Type de déchet avec icône
                     Row(
@@ -164,11 +169,12 @@ class MarketplaceItemCard extends StatelessWidget {
                         SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            item.wasteType,
+                            // Mettre la première lettre en majuscule pour l'affichage
+                            item.wasteType.isNotEmpty ? item.wasteType[0].toUpperCase() + item.wasteType.substring(1) : '',
                             style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                              fontWeight: FontWeight.w500,
+                              fontSize: 14, // Légèrement plus grand
+                              color: Colors.black87,
+                              fontWeight: FontWeight.bold,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -176,20 +182,16 @@ class MarketplaceItemCard extends StatelessWidget {
                       ],
                     ),
 
-                    SizedBox(height: 4),
-
                     // Quantité
                     Text(
-                      item.quantity,
+                      'Quantité: ${item.quantity}', // Ajout d'un label pour le contexte
                       style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: Colors.grey[700],
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-
-                    SizedBox(height: 4),
 
                     // Localisation
                     Row(
@@ -222,51 +224,52 @@ class MarketplaceItemCard extends StatelessWidget {
     );
   }
 
+  // <<< 2. REMPLACEMENT DE L'ANCIENNE MÉTHODE _buildImage() PAR CELLE-CI >>>
   Widget _buildImage() {
-    // Vérifier si le fichier image existe
-    final imageFile = File(item.imagePath);
+    final String base64String = item.imagePath;
 
-    if (imageFile.existsSync()) {
-      return Image.file(
-        imageFile,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return _buildPlaceholder();
-        },
-      );
-    } else {
-      // Essayer de charger depuis les assets
-      return Image.asset(
-        item.imagePath,
-        fit: BoxFit.cover,
-        errorBuilder: (context, error, stackTrace) {
-          return _buildPlaceholder();
-        },
-      );
+    print("---- DÉBOGAGE DE L'IMAGE POUR L'ITEM ID: ${item.id} ----");
+    print("Le imagePath est-il vide ? ${base64String.isEmpty}");
+    print("Le imagePath commence-t-il par 'data:image' ? ${base64String.startsWith('data:image')}");
+    // Affiche les 100 premiers caractères pour voir à quoi la chaîne ressemble
+    print("Début du contenu de imagePath: ${base64String.substring(0, base64String.length > 100 ? 100 : base64String.length)}");
+    print("-------------------------------------------------");
+
+    // Vérifie si la chaîne est valide et commence par le préfixe attendu.
+    if (base64String.isNotEmpty && base64String.startsWith('data:image')) {
+      try {
+        // Sépare le préfixe "data:image/jpeg;base64," du reste de la chaîne.
+        final String imagePayload = base64String.split(',')[1];
+        // Décode la chaîne base64 en octets.
+        final imageBytes = base64Decode(imagePayload);
+
+        // Affiche l'image depuis la mémoire.
+        return Image.memory(
+          imageBytes,
+          fit: BoxFit.cover,
+          gaplessPlayback: true, // Évite un clignotement lors du rechargement
+        );
+      } catch (e) {
+        // Si le décodage échoue, affiche le placeholder.
+        print("Erreur de décodage de l'image Base64 pour l'item ${item.id}: $e");
+        return _buildPlaceholder();
+      }
     }
+
+    // Si la chaîne n'est pas valide, affiche le placeholder par défaut.
+    return _buildPlaceholder();
   }
 
   Widget _buildPlaceholder() {
     return Container(
-        color: Colors.grey[200],
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                _getWasteTypeIcon(),
-                size: 40,
-                color: Colors.grey[400],
-              ),
-              SizedBox(height: 8),
-              Text(
-                item.wasteType,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
-                ),
-              ),
-            ],
-       ),
-   );
-    }
+      color: Colors.grey[200],
+      child: Center(
+        child: Icon(
+          _getWasteTypeIcon(),
+          size: 50,
+          color: Colors.grey[400],
+        ),
+      ),
+    );
+  }
 }
