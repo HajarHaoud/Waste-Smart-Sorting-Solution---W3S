@@ -192,10 +192,8 @@ class AdSubmissionProvider with ChangeNotifier {
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
 
-// Méthode de soumission de l'annonce (à vérifier si elle correspond à votre backend)
-  // Méthode de soumission de l'annonce (CORRIGÉE)
+
   Future<bool> submitAd() async {
-    // Validez les champs nécessaires avant de soumettre
     if (_imageFile == null || _detections.isEmpty || _quantity.isEmpty || (_adType == "sell" && _price == null)) {
       _errorMessage = "Veuillez sélectionner une image et remplir tous les champs requis.";
       _status = AdSubmissionStatus.submissionFailed;
@@ -208,23 +206,17 @@ class AdSubmissionProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      // 1. Préparez l'URL de votre API de soumission d'annonce
-      // ASSUREZ-VOUS QUE CET ENDPOINT EST LE BON !
       final submitUrl = Uri.parse(API_BASE_URL1 + "/submit_ad");
 
-      // 2. Lisez l'image originale et encodez-la en base64
       final imageBytes = await _imageFile!.readAsBytes();
       String base64Image = base64Encode(imageBytes);
 
-      // 3. Préparez le corps de la requête avec TOUTES les données nécessaires
       final body = jsonEncode({
-        // Assurez-vous que les noms des clés ('wasteTypes', 'quantity', etc.)
-        // correspondent EXACTEMENT à ce que votre backend attend.
         'wasteTypes': _detections.map((det) => det['name']).toList(),
         'quantity': _quantity, // Envoyez la quantité comme un nombre si possible
         'description': _description,
         'adType': _adType,
-
+        'location' : _location,
         'price': _price,
         'image': base64Image, // <-- LA CORRECTION LA PLUS IMPORTANTE !
       });
