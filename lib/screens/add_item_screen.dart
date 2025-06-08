@@ -379,38 +379,38 @@ class _AddItemScreenState extends State<AddItemScreen> {
   Widget _buildRadioAction(String value, String title, IconData icon) {
     final bool isSelected = _selectedAction == value;
     return Material(
-        color: Colors.transparent,
-        child: InkWell(
-            onTap: () {
-              if (mounted) setState(() => _selectedAction = value);
-            },
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          if (mounted) setState(() => _selectedAction = value);
+        },
+        borderRadius: value == 'Donate' ?
+        BorderRadius.only(topLeft: _borderRadius.topLeft, bottomLeft: _borderRadius.bottomLeft) :
+        BorderRadius.only(topRight: _borderRadius.topRight, bottomRight: _borderRadius.bottomRight),
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
+          decoration: BoxDecoration(
+            color: isSelected ? _accentColor.withOpacity(0.1) : Colors.transparent, // Fond léger avec accent si sélectionné
             borderRadius: value == 'Donate' ?
             BorderRadius.only(topLeft: _borderRadius.topLeft, bottomLeft: _borderRadius.bottomLeft) :
             BorderRadius.only(topRight: _borderRadius.topRight, bottomRight: _borderRadius.bottomRight),
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0),
-              decoration: BoxDecoration(
-                color: isSelected ? _accentColor.withOpacity(0.1) : Colors.transparent, // Fond léger avec accent si sélectionné
-                borderRadius: value == 'Donate' ?
-                BorderRadius.only(topLeft: _borderRadius.topLeft, bottomLeft: _borderRadius.bottomLeft) :
-                BorderRadius.only(topRight: _borderRadius.topRight, bottomRight: _borderRadius.bottomRight),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: isSelected ? _accentColor : _hintColor, size: 20), // Icône avec accent si sélectionné
+              const SizedBox(width: 8),
+              Text(
+                title,
+                style: TextStyle(
+                  color: isSelected ? _accentColor : _textColor, // Texte avec accent si sélectionné
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(icon, color: isSelected ? _accentColor : _hintColor, size: 20), // Icône avec accent si sélectionné
-                  const SizedBox(width: 8),
-                  Text(
-                    title,
-                    style: TextStyle(
-                      color: isSelected ? _accentColor : _textColor, // Texte avec accent si sélectionné
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            ),
-       );
-   }
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

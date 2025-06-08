@@ -13,7 +13,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   bool _notificationsEnabled = true;
-  bool _darkModeEnabled = false;
+
 
   @override
   void initState() {

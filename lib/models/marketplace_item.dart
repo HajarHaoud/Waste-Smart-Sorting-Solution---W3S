@@ -1,4 +1,8 @@
 // lib/models/marketplace_item.dart
+
+// AJOUTEZ CET IMPORT
+import 'package:w3s/constants.dart';
+
 class MarketplaceItem {
   final String id;
   final String title;
@@ -57,6 +61,40 @@ class MarketplaceItem {
       imagePath: map['imagePath'],
       datePosted: DateTime.fromMillisecondsSinceEpoch(map['datePosted']),
       userId: map['userId'],
+    );
+  }
+
+  // =========================================================================
+  //  IMPLÉMENTATION DE fromJson AVEC TRADUCTION DES DONNÉES
+  // =========================================================================
+  factory MarketplaceItem.fromJson(Map<String, dynamic> json) {
+    final List<dynamic> typesFromApi = json['wasteTypes'] ?? [];
+    final String translatedWasteType = typesFromApi.isNotEmpty ? typesFromApi.first.toString() : 'Divers';
+
+    final String apiAdType = json['adType'] ?? 'give';
+    final String translatedAction = apiAdType == 'give' ? 'Donate' : 'Sell';
+
+    final String apiImageUrl = json['imageUrl'] ?? '';
+    final String fullImagePath = apiImageUrl.startsWith('http') ? apiImageUrl : (API_BASE_URL1 + apiImageUrl);
+
+    final DateTime translatedDatePosted = DateTime.tryParse(json['createdAt'] ?? '') ?? DateTime.now();
+
+    final String generatedTitle = translatedWasteType.isNotEmpty
+        ? (translatedWasteType[0].toUpperCase() + translatedWasteType.substring(1))
+        : 'Annonce';
+
+    return MarketplaceItem(
+      id: json['id'] as String? ?? '',
+      title: generatedTitle,
+      description: json['description'] as String? ?? '',
+      wasteType: translatedWasteType,
+      quantity: json['quantity'] as String? ?? 'N/A',
+      location: 'Non spécifié',
+      action: translatedAction,
+      price: json['price'] != null ? (json['price'] as num).toDouble() : null,
+      imagePath: fullImagePath,
+      datePosted: translatedDatePosted,
+      userId: 'user_placeholder',
     );
   }
 
@@ -125,5 +163,5 @@ class MarketplaceItem {
     imagePath.hashCode ^
     datePosted.hashCode ^
     userId.hashCode;
-    }
+  }
 }

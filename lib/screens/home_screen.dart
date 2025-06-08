@@ -263,7 +263,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
           Positioned(
-            bottom: 15,
+            bottom: 0,
             right: 15,
             child: FloatingActionButton(
               onPressed: () {
@@ -273,22 +273,20 @@ class _HomeScreenState extends State<HomeScreen> {
               backgroundColor: Theme.of(context).colorScheme.primary,
               heroTag: 'chatButton',
               child: const Icon(
-                Icons.chat_bubble_outline_rounded,
-                color: Colors.white
+                  Icons.chat_bubble_outline_rounded,
+                  color: Colors.white
               ),
               tooltip: 'Chat with Assistant',
             ),
           ),
-
-
           Positioned(
-            bottom: 15,
+            bottom: 0,
             left: 15,
             child: FloatingActionButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AdDetailsFormScreen()),
+                  MaterialPageRoute(builder: (context) => TakePhotoScreen()),
                 );
               },
               child: Icon(Icons.add_photo_alternate_outlined, color: Colors.white),

@@ -248,25 +248,25 @@ class MarketplaceItemCard extends StatelessWidget {
 
   Widget _buildPlaceholder() {
     return Container(
-        color: Colors.grey[200],
-        child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                _getWasteTypeIcon(),
-                size: 40,
-                color: Colors.grey[400],
-              ),
-              SizedBox(height: 8),
-              Text(
-                item.wasteType,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
-                ),
-              ),
-            ],
-       ),
-   );
-    }
+      color: Colors.grey[200],
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            _getWasteTypeIcon(),
+            size: 40,
+            color: Colors.grey[400],
+          ),
+          SizedBox(height: 8),
+          Text(
+            item.wasteType,
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 12,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

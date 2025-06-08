@@ -65,6 +65,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
         ),
       );
     }
+
+
   }
 
   void _applyFilter(String filter) {
@@ -112,7 +114,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
       ),
       body: Column(
         children: [
-          // Filtres
+// Filtres
           Container(
             height: 60,
             padding: EdgeInsets.symmetric(vertical: 8),
@@ -170,6 +172,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
         child: Icon(Icons.add, color: Colors.white),
       ),
     );
+
   }
 
   Widget _buildItemsList(List<MarketplaceItem> items) {
@@ -238,6 +241,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
         },
       ),
     );
+
+
   }
 
   void _showItemDetails(MarketplaceItem item) {
@@ -260,7 +265,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Indicateur de drag
+// Indicateur de drag
                 Center(
                   child: Container(
                     width: 40,
@@ -273,7 +278,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
                 ),
                 SizedBox(height: 16),
 
-                // Image
+// Image
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.file(
@@ -383,32 +388,34 @@ class _MarketplaceScreenState extends State<MarketplaceScreen> with TickerProvid
         ),
       ),
     );
+
+
   }
 
   Widget _buildInfoRow(IconData icon, String label, String value) {
     return Padding(
-        padding: EdgeInsets.symmetric(vertical: 4),
-        child: Row(
-            children: [
-              Icon(icon, size: 20, color: Colors.grey[600]),
-              SizedBox(width: 12),
-              Text(
-                '$label: ',
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  color: Colors.grey[700],
-                ),
+      padding: EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Colors.grey[600]),
+          SizedBox(width: 12),
+          Text(
+            '$label: ',
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              color: Colors.grey[700],
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontWeight: FontWeight.w400,
               ),
-              Expanded(
-                child: Text(
-                  value,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w400,
-                  ),
-                ),
-              ),
-            ],
-           ),
-   );
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
